@@ -1,0 +1,30 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    height: 100%; /* Ensure the full height is used */
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.calendar-column {
+    flex: none; /* Do not grow or shrink */
+    width: 40%; /* Starting width of the calendar column */
+    overflow: auto;
+    border-right: 2px solid #ddd;
+    resize: horizontal; /* Allow resizing */
+    max-width: 100%; /* Prevent it from resizing beyond the container width */
+}
+
+.journal-column {
+    flex-grow: 1; /* Take up the remaining space */
+    overflow: auto;
+}
+.resizer {
+    width: 5px;
+    cursor: ew-resize;
+    background-color: #ccc;
+}
