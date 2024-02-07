@@ -42,20 +42,22 @@ body, html {
 }
 
 button {
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition-duration: 0.4s;
+  padding: 10px 20px;
+  border: none;
+  background-color: #f0f0f0; /* Soft gray, can be changed to match your color scheme */
+  color: #333; /* Dark gray for text */
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  text-transform: uppercase; /* Optional style */
+  border-radius: 4px; /* Slightly rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #45a049;
+  background-color: #e0e0e0; /* Slightly darker shade on hover */
+}
+
+button:active {
+  background-color: #d0d0d0; /* Even darker shade when clicked */
 }

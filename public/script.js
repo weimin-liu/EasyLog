@@ -1,5 +1,5 @@
 // Define a variable to hold the selected date
-let selectedDate = null;
+let selectedDate = new Date().toISOString().split('T')[0];
 let calendar = null; // Declare the calendar variable outside the event listener
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -48,14 +48,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({ date: selectedDate, content }),
             })
             .then(response => response.json())
-            .then(data => console.log('Entry saved with ID:', data.id))
+            .then(data =>{
+                console.log('Entry saved with ID:', data.id);
+                refreshCalendar();
+            })
             .catch((error) => {
                 console.error('Error:', error);
             });
         } else {
             console.error('No date selected');
         }
-        refreshCalendar();
     });
 });
     const toggleButton = document.getElementById('toggle-button');
