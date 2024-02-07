@@ -130,6 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
             markdownEditorContainer.style.display = 'block';
             entriesContainer.style.display = 'none';
             calendarColumn.style.display = 'block'; // Show the calendar
+            refreshCalendar()
         }
     }
 
