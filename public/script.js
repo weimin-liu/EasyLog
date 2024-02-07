@@ -9,7 +9,28 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(dates => {
         // Convert the dates to events
         const events = dates.map(date => ({ title: ' ', start: date }));
-        var simplemde = new SimpleMDE({ element: document.getElementById("journal") });
+        var simplemde = new SimpleMDE({
+            element: document.getElementById("journal"),
+            toolbar: [
+            "bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image","table", "|", "preview", "side-by-side", "fullscreen", "|", "guide",
+            {
+                name: "save",
+                action: function customFunction(editor){
+                    saveButtonClickHandler();
+                }  ,
+                className: "fa fa-save",
+                title: "Save"
+            },
+                {
+                    name: "toggle",
+                    action: function customFunction(editor){
+                        toggleViewButtonHandler();
+                    }  ,
+                    className: "fa fa-eye",
+                    title: "Toggle View"
+
+                }]
+        });
 
         var calendarEl = document.getElementById('calendar');
         calendar = new FullCalendar.Calendar(calendarEl, {
@@ -36,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var today = new Date().toISOString().split('T')[0];
     loadJournalEntry(today, simplemde);
 
-    document.getElementById('saveButton').addEventListener('click', function() {
+    function saveButtonClickHandler() {
         if (selectedDate) {
             const content = simplemde.value();
 
@@ -58,17 +79,32 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.error('No date selected');
         }
-    });
+    }
 });
-    const toggleButton = document.getElementById('toggle-button');
     const markdownEditorContainer = document.getElementById('markdown-editor-container');
     const entriesContainer = document.getElementById('entries-container');
+    const calendarColumn = document.querySelector('.calendar-column');
 
-    toggleButton.addEventListener('click', function() {
+    function toggleViewButtonHandler() {
         if (markdownEditorContainer.style.display !== 'none') {
             // Switch to view mode
             markdownEditorContainer.style.display = 'none';
+            calendarColumn.style.display = 'none'; // Hide the calendar
             entriesContainer.style.display = 'block';
+            // Create a new toggle button
+            const toggleButton = document.createElement('button');
+
+            // Create an icon element
+            const icon = document.createElement('i');
+            icon.className = 'fa fa-eye';
+
+            // Append the icon to the toggle button
+            toggleButton.appendChild(icon);
+
+            toggleButton.addEventListener('click', toggleViewButtonHandler);
+
+             // Append the toggle button to the entries container
+             entriesContainer.appendChild(toggleButton);
 
             // Fetch the dates and display the content of each entry
             fetch('/get-dates')
@@ -85,13 +121,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         entriesContainer.appendChild(entryElement);
                     });
                 });
+
+            // Append the toggle button to the entries container again, as the previous innerHTML operation removed it
+            entriesContainer.appendChild(toggleButton);
             });
         } else {
             // Switch to edit mode
             markdownEditorContainer.style.display = 'block';
             entriesContainer.style.display = 'none';
+            calendarColumn.style.display = 'block'; // Show the calendar
         }
-    });
+    }
 
 });
 
@@ -118,7 +158,7 @@ function loadJournalEntry(date, simplemde) {
         if (error.message === 'Entry not found') {
             // If no entry exists for the selected date, clear the editor
             // or set a default template for a new entry
-            simplemde.value("# Journal Entry for " + date + "\n\nStart writing here...");
+            simplemde.value("# " + date + "\n\nStart writing here...");
         } else {
             // Handle other errors, perhaps show a message to the user
             console.error('Error loading journal entry:', error);

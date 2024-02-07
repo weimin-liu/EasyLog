@@ -44,14 +44,32 @@ app.post('/save', (req, res) => {
             return res.status(500).send('Failed to save the entry');
         }
 
-        // Insert entry metadata into SQLite database
-        const query = `INSERT INTO entries (date, filename) VALUES (?, ?)`;
-        db.run(query, [date, filename], function(err) {
+        // Check if entry already exists
+        db.get('SELECT * FROM entries WHERE date = ?', date, (err, row) => {
             if (err) {
                 console.error(err);
-                return res.status(500).send('Failed to record the entry in the database');
+                return res.status(500).send('Failed to query the database');
             }
-            res.send({ id: this.lastID });
+
+            if (row) {
+                // If entry exists, update it
+                db.run('UPDATE entries SET filename = ? WHERE date = ?', [filename, date], function(err) {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).send('Failed to update the entry in the database');
+                    }
+                    res.send({ id: row.id });
+                });
+            } else {
+                // If entry does not exist, insert it
+                db.run('INSERT INTO entries (date, filename) VALUES (?, ?)', [date, filename], function(err) {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).send('Failed to insert the entry into the database');
+                    }
+                    res.send({ id: this.lastID });
+                });
+            }
         });
     });
 });
