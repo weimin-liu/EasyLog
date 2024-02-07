@@ -79,3 +79,15 @@ app.get('/get-entry', (req, res) => {
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+
+app.get('/get-dates', (req, res) => {
+    const db = new sqlite3.Database('./journal.db');
+    db.all('SELECT DISTINCT date FROM entries', (err, rows) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            // Send the dates as a JSON array
+            res.json(rows.map(row => row.date));
+        }
+    });
+});

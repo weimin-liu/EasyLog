@@ -7,20 +7,27 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="simplemde.min.css">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="calendar-column">
             <!-- Calendar will be dynamically generated in JS -->
             <div id="calendar"></div>
+            <button id="toggle-button">Toggle View</button>
+            <button id="saveButton">Save Entry</button>
         </div>
         <div class="resizer"></div> <!-- Draggable divider -->
-        <div class="journal-column">
-            <textarea id="journal"></textarea>
+        <div id="markdown-editor-container">
+            <div class="journal-column">
+                <textarea id="journal"></textarea>
+            </div>
+        </div>
+        <div id="entries-container" style="display: none;">
+            <!-- The entries will be displayed here -->
         </div>
     </div>
     <script src="simplemde.min.js"></script>
-    <button id="saveButton">Save Entry</button>
     <script src="script.js"></script>
 </body>
 </html>

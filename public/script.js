@@ -1,19 +1,34 @@
 // Define a variable to hold the selected date
 let selectedDate = null;
+let calendar = null; // Declare the calendar variable outside the event listener
 
 document.addEventListener('DOMContentLoaded', function() {
-    var simplemde = new SimpleMDE({ element: document.getElementById("journal") });
+    // Fetch the dates with entries
+    fetch('/get-dates')
+    .then(response => response.json())
+    .then(dates => {
+        // Convert the dates to events
+        const events = dates.map(date => ({ title: ' ', start: date }));
+        var simplemde = new SimpleMDE({ element: document.getElementById("journal") });
 
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        height: 'auto',
-        dateClick: function(info) {
-            // Update the selectedDate variable with the clicked date
-            selectedDate = info.dateStr;
-            // Load the journal entry for the clicked date
-            loadJournalEntry(info.dateStr, simplemde);
-        }
+        var calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 'auto',
+            dateClick: function(info) {
+                // Update the selectedDate variable with the clicked date
+                selectedDate = info.dateStr;
+                // Load the journal entry for the clicked date
+                loadJournalEntry(info.dateStr, simplemde);
+                // Remove the 'highlight' class from all date cells
+                document.querySelectorAll('.fc-day').forEach(function(cell) {
+                    cell.classList.remove('highlight');
+                });
+                // Add the 'highlight' class to the clicked date cell
+                info.dayEl.classList.add('highlight');
+            },
+            // Add the events to the calendar
+            events: events
     });
     calendar.render();
 
@@ -40,7 +55,42 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.error('No date selected');
         }
+        refreshCalendar();
     });
+});
+    const toggleButton = document.getElementById('toggle-button');
+    const markdownEditorContainer = document.getElementById('markdown-editor-container');
+    const entriesContainer = document.getElementById('entries-container');
+
+    toggleButton.addEventListener('click', function() {
+        if (markdownEditorContainer.style.display !== 'none') {
+            // Switch to view mode
+            markdownEditorContainer.style.display = 'none';
+            entriesContainer.style.display = 'block';
+
+            // Fetch the dates and display the content of each entry
+            fetch('/get-dates')
+            .then(response => response.json())
+            .then(dates => {
+                entriesContainer.innerHTML = '';
+                dates.forEach(date => {
+                    fetch(`/get-entry?date=${date}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const content = data.content;
+                        const entryElement = document.createElement('div');
+                        entryElement.innerHTML = marked.parse(content); // Convert Markdown to HTML
+                        entriesContainer.appendChild(entryElement);
+                    });
+                });
+            });
+        } else {
+            // Switch to edit mode
+            markdownEditorContainer.style.display = 'block';
+            entriesContainer.style.display = 'none';
+        }
+    });
+
 });
 
 function loadJournalEntry(date, simplemde) {
@@ -84,6 +134,9 @@ resizer.addEventListener('mousedown', (e) => {
     document.addEventListener('mouseup', () => {
         isResizing = false;
         document.removeEventListener('mousemove', handleMouseMove);
+        if (calendar) {
+            calendar.updateSize(); // Update the calendar size after resizing
+        }
     });
 });
 
@@ -93,4 +146,18 @@ function handleMouseMove(e) {
     document.querySelector('.calendar-column').style.width = `${newWidth}px`;
 }
 
+function refreshCalendar() {
+    // Fetch the updated list of dates from the server
+    fetch('/get-dates')
+    .then(response => response.json())
+    .then(dates => {
+        // Convert the dates to events
+        const events = dates.map(date => ({ title: ' ', start: date }));
 
+        // Remove all events from the calendar
+        calendar.removeAllEvents();
+
+        // Add the new events to the calendar
+        calendar.addEventSource(events);
+    });
+}
