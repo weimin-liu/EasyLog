@@ -36,6 +36,11 @@ document.addEventListener('DOMContentLoaded', function() {
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             height: 'auto',
+            headerToolbar: {
+                left: 'prev',
+                center: 'title',
+                right: 'next'
+            },
             dateClick: function(info) {
                 // Update the selectedDate variable with the clicked date
                 selectedDate = info.dateStr;

@@ -69,7 +69,7 @@ button:active {
     display: none;
 }
 .CodeMirror {
-	height: 300px  !important;
+	height: 500px  !important;
 }
 
 #entries-container {
@@ -80,3 +80,4 @@ button:active {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
 }
+
